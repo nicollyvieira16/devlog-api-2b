@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { validateProject} from "../middlewares/validateProject.js";
 const router = Router();
 
 // "Banco" em memória — array de projetos
@@ -14,11 +15,8 @@ router.get('/', (req, res) => {
 });
 
 // POST /api/v1/projects — criar
-router.post('/', (req, res) => {
+router.post('/', validateProject, (req, res) => {
     const { title, description } = req.body;
-    if (!title){
-         return res.status(400).json({ error: 'title é obrigatório' });
-    }
     const project = {
         id: parseInt(Date.now().toString()), 
         title: title, 
@@ -40,7 +38,7 @@ router.get('/:id', (req, res) => {
 });
 
 // PATCH /api/v1/projects/:id — atualizar
-router.patch('/:id', (req, res) => {
+router.patch('/:id', validateProject, (req, res) => {
     const{id} = req.params;
     const index = projects.findIndex(p => p.id === parseInt(id));
     if (index === -1) {

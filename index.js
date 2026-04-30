@@ -12,7 +12,10 @@
 
 import projectRoutes from './routes/projectsRoutes.js'
 import express from 'express';
+import morgan from 'morgan';
 const app = express(); //cria instacia do express
+
+app.use(morgan('dev'));
 app.use(express.json()); //lida com o formato json
 
 const port = 3000;
@@ -22,6 +25,25 @@ app.use('/api/v1/projects', projectRoutes);
 
 app.get('/health', (req, res) =>{
     res.json({status: 'OK'});
+});
+
+  
+// 404 — rota não encontrada 
+app.use((req, res, next) => { 
+  res.status(404).json({ 
+    error: 'Rota não encontrada', 
+    path: req.path, 
+    method: req.method 
+  }); 
+});
+
+// index.js — ÚLTIMO middleware, 4 parâmetros obrigatórios 
+app.use((err, req, res, next) => { 
+  console.error('Erro:', err.message); 
+  const status = err.statusCode || 500; 
+  res.status(status).json({ 
+    error: err.message || 'Erro interno do servidor' 
+  }); 
 });
 
 app.listen(port, () => {
