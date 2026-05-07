@@ -3,50 +3,55 @@
 //configura type: module no package.json
 //npm nodemon --save-dev
 //configura o nodemon no package.json
-    //scripts
-    //"start": "node index.js",
-    //"dev": "nodemon index.js"
+//scripts
+//"start": "node index.js",
+//"dev": "nodemon index.js"
 //criar o arquivo index.js
 //iniciar o servidor express
 //npm run dev  //executa o projeto
 
-import projectRoutes from './routes/projectsRoutes.js'
+import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
+import projectRoutes from './routes/projectsRoutes.js'
 const app = express(); //cria instacia do express
 
+// ── Middlewares globais ──────────────────────────────────────
 app.use(morgan('dev'));
 app.use(express.json()); //lida com o formato json
 
-const port = 3000;
 
-//Monta o router no prefixo
+// ── Rotas ────────────────────────────────────────────────────
 app.use('/api/v1/projects', projectRoutes);
 
-app.get('/health', (req, res) =>{
-    res.json({status: 'OK'});
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    env: process.env.NODE_ENV,
+    version: '1.0.0'
+  });
 });
 
-  
-// 404 — rota não encontrada 
-app.use((req, res, next) => { 
-  res.status(404).json({ 
-    error: 'Rota não encontrada', 
-    path: req.path, 
-    method: req.method 
-  }); 
+// ── Middleware de 404 ────────────────────────────────────────
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: 'Rota não encontrada',
+    path: req.path,
+    method: req.method
+  });
 });
 
-// index.js — ÚLTIMO middleware, 4 parâmetros obrigatórios 
-app.use((err, req, res, next) => { 
-  console.error('Erro:', err.message); 
-  const status = err.statusCode || 500; 
-  res.status(status).json({ 
-    error: err.message || 'Erro interno do servidor' 
-  }); 
+// ── Error handler (4 params — SEMPRE ÚLTIMO) ─────────────────
+app.use((err, req, res, next) => {
+  console.error(err.message);
+  res.status(err.statusCode || 500).json({
+    error: err.message || 'Erro interno do servidor'
+  });
 });
 
-app.listen(port, () => {
-    let data = new Date();
-    console.log(`Servidor iniciado em ${data}`);
+const PORT = process.env.PORT || 3000; //fallback para porta 3000
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
 });

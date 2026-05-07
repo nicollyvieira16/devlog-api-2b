@@ -1,62 +1,22 @@
 import { Router } from "express";
+import{list, create, getById, update, remove}from
+'../controllers/projectController.js';
 import { validateProject} from "../middlewares/validateProject.js";
 const router = Router();
 
-// "Banco" em memória — array de projetos
-let projects = [
-    {id: 1001, title: "Projeto inicial", description: "Um projeto qualquer", createdAt: "" },
-    {id: 1002, title: "Projeto X", description: "Um projeto sigiloso", createdAt: "" },
-    {id: 1003, title: "Projeto Top", description: "Ninguém sabe o que é", createdAt: "" }
-]; 
+// GET /api/v1/projects
+router.get('/', list);
 
-// GET /api/v1/projects — listar todos
-router.get('/', (req, res) => {
-    res.json({ projects, total: projects.length });
-});
+// POST /api/v1/projects
+router.post('/', validateProject, create);
 
-// POST /api/v1/projects — criar
-router.post('/', validateProject, (req, res) => {
-    const { title, description } = req.body;
-    const project = {
-        id: parseInt(Date.now().toString()), 
-        title: title, 
-        description: description || '',
-        createdAt: new Date().toISOString()
-    };
-    projects.push(project);
-    res.status(201).json(project);
-});
+// GET /api/v1/projects/:id
+router.get('/:id', getById);
 
-// GET /api/v1/projects/:id — buscar por ID
-router.get('/:id', (req, res) => {
-    const {id} = req.params;
-    const project = projects.find(item => item.id === parseInt(id));
-    if (!project) {
-        return res.status(404).json({ error: 'Projeto não encontrado' });
-    }
-    res.json(project);
-});
+// PATCH /api/v1/projects/:id
+router.patch('/:id', validateProject, update);
 
-// PATCH /api/v1/projects/:id — atualizar
-router.patch('/:id', validateProject, (req, res) => {
-    const{id} = req.params;
-    const index = projects.findIndex(p => p.id === parseInt(id));
-    if (index === -1) {
-        return res.status(404).json({ error: 'Projeto não encontrado' });
-    }
-    projects[index] = { ...projects[index], ...req.body, id: projects[index].id };
-    res.json(projects[index]);
-});
-
-// DELETE /api/v1/projects/:id — remover
-router.delete('/:id', (req, res) => {
-    const{id} = req.params;
-    const index = projects.findIndex(p => p.id === parseInt(id));
-    if (index === -1){
-        return res.status(404).json({ error: 'Projeto não encontrado' });
-    }
-    projects.splice(index, 1);
-    res.sendStatus(204);
-});
+// DELETE /api/v1/projects/:id
+router.delete('/:id', remove);
 
 export default router;
