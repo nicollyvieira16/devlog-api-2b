@@ -5,7 +5,7 @@ const usuarios = [
     { id: 2, email: 'bob@devlog.com', senha: 'abcdef' },
 ];
 export function login(req, res) {
-    const { email, senha } = req.body;
+    const { email, senha } = req.body; //desestruturação
     // Busca o usuário pelo email
     const usuario = usuarios.find(u => u.email === email);
     // Mesma mensagem para email não encontrado E senha errada (segurança)

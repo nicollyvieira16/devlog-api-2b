@@ -7,20 +7,18 @@ const router = Router();
 
 // GET /api/v1/projects
 router.get('/', list);
-// GET /api/v1/projects/:id
-router.get('/:id', getById);
 
-router.use(authenticate
-    
-)
+// GET /api/v1/projects/:id
+router.get('/:id',  authenticate, getById);
+
 // POST /api/v1/projects
-router.post('/', validateProject, create);
+router.post('/', authenticate, validateProject,  create);
 
 
 // PATCH /api/v1/projects/:id
 router.patch('/:id', validateProject, update);
 
 // DELETE /api/v1/projects/:id
-router.delete('/:id', remove);
+router.delete('/:id',  authenticate, remove);
 
 export default router;

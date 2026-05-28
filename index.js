@@ -14,7 +14,7 @@ import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
 import projectRoutes from './routes/projectsRoutes.js';
-import { login } from './controllers/authControllers.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express(); //cria instacia do express
 
@@ -23,10 +23,12 @@ const app = express(); //cria instacia do express
 app.use(morgan('dev'));
 app.use(express.json()); //lida com o formato json
 
-app.post('/auth/login', login);
+
 
 // ── Rotas ────────────────────────────────────────────────────
 app.use('/api/v1/projects', projectRoutes);
+app.use('/api/v1/auth', authRoutes);
+
 
 app.get('/health', (req, res) => {
   res.json({
